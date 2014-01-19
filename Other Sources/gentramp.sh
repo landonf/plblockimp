@@ -177,8 +177,11 @@ main () {
     local prefix_size=$(compute_asm_size)
     asm_discard
 
+    # Align the prefix size to 16 bytes
+    local aligned_prefix_size=`perl -e "print ((${prefix_size} + 15) & ~15)"`
+
     # Compute the size of the remaining code page.
-    local page_avail=`expr $PAGE_SIZE - $prefix_size`
+    local page_avail=`expr $PAGE_SIZE - $aligned_prefix_size`
 
     # Determine the trampoline size
     trampoline
@@ -191,7 +194,7 @@ main () {
 
     # Compute the number of of available trampolines. 
     local trampoline_count=`expr $page_avail / $tramp_size`
-    echo "Prefix size: ${prefix_size}"
+    echo "Prefix size: ${prefix_size} (${aligned_prefix_size})"
     echo "Trampoline size: ${tramp_size}"
     echo "Trampolines per page: ${trampoline_count}"
 
@@ -220,7 +223,7 @@ main () {
         extern void *${PAGE_NAME};
         pl_trampoline_table_config ${PAGE_NAME}_config = {
             .trampoline_size = ${tramp_size},
-            .page_offset = ${prefix_size},
+            .page_offset = ${aligned_prefix_size},
             .trampoline_count = ${trampoline_count},
             .template_page = &${PAGE_NAME}
         };
