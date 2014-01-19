@@ -221,6 +221,7 @@ main () {
         #include <PLBlockIMP/trampoline_table.h>
 
         extern void *${PAGE_NAME};
+        extern pl_trampoline_table_config ${PAGE_NAME}_config;
         pl_trampoline_table_config ${PAGE_NAME}_config = {
             .trampoline_size = ${tramp_size},
             .page_offset = ${aligned_prefix_size},
